@@ -1,42 +1,15 @@
-import React from "react";
+import React, { lazy , Suspense} from "react";
 import ReactDOM from "react-dom/client";
 import Header from "./components/Header";
 import Body from "./components/Body";
+import About from "./components/About";
+import Contact from "./components/Contact";
+import Error from "./components/Error";
+import { createBrowserRouter , RouterProvider , Outlet } from "react-router";
+import RestaurantMenu from "./components/RestaurantMenu";
 
-const resList = {
-  "type": "restaurant",
-  "data": [
-    {
-      "id": 1,
-      "name": "Meghna Foods dfljflkfjsfjlfjslfjdklfjlfjsflj",
-      "cuisines": ["Biryani", "North Indian"],
-      "rating": 4.3,
-      "image": "https://example.com/img1.jpg"
-    },
-    {
-      "id": 2,
-      "name": "Domino's Pizza",
-      "cuisines": ["Pizza", "Fast Food"],
-      "rating": 4.0,
-      "image": "https://example.com/img2.jpg"
-    }
-  ]
-}
+const Grocery = lazy(() => import("./components/Grocery"));
 
-const RestaurentCard = (props) => {
-
-    const {resData}  = props;
-
-    return (
-        <div className="res-card" style={{ backgroundColor: '#f0f0f0' , }}>
-            <img className="res-logo" alt="res-logo" src="https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_292,h_300/TopPicks2024/158037815D.png"/>
-            <h3> {resData.name}</h3>
-            <h4> {resData.cuisines.join(", ")}</h4>
-            <h4>{resData.rating }</h4>
-            <h4> 38 min</h4>
-        </div>
-    );
-};
 
 
 
@@ -44,10 +17,45 @@ const AppLayout = () => {
     return (
         <div className="app">
             <Header/>
-            <Body/>
+            <Outlet/>
         </div>
     )
 }
+
+const appRouter  = createBrowserRouter([  {
+    path: "/",
+    element:<AppLayout/>,
+    children: [
+      {
+
+        path: "/",
+        element: <Body/>,
+      },
+      {
+        path: "/about",
+        element:<About/>,
+
+      },
+      {
+        path: "/contact",
+        element:<Contact/>,
+
+      },
+        {
+        path: "/grocery",
+        element:<Suspense fallback = {<h1>loading....</h1>}><Grocery/></Suspense>,
+
+      },
+      {
+        path: "/restaurents/:resId",
+        element:<RestaurantMenu/>,
+
+      },
+    ],
+    errorElement: <Error/>,
+  },
+ 
+]);
 
 // react element 
 const heading =  React.createElement("h1" , {id: "heading"} , "Namaste React");
@@ -59,4 +67,4 @@ const HeadingComponent  = () => {
 };
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<AppLayout/>);
+root.render(<RouterProvider router={appRouter} />);
